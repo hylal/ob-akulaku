@@ -62,11 +62,36 @@ WC tested up to: 3.7
         $this->environment	 = $this->sandbox == 'no' ? 'production' : 'sandbox';
         $this->appId	 = $this->sandbox == 'no' ? $this->get_option( 'appId' ) : $this->get_option( 'sandbox_appId' );
         $this->secKey	 = $this->sandbox == 'no' ? $this->get_option( 'secKey' ) : $this->get_option( 'sandbox_secKey' );
-        
 
+        //Hooks
+        add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
+        add_action( 'admin_notices', array($his, 'checks' ) );
+        add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+      }
+      // Pilihan Admin
+      public function admin_options() {
+        ?>
+        <h3><?php _e( 'OB Akulaku', 'woocommerce'); ?></h3>
+        <p><?php _e( 'Payment Gateway untuk Akulaku', 'woocommerce'); ?></p>
+        <table class="form-table">
+          <?php $this->generate_settings_html(); ?>
+          <script type="text/javascript">
+          jQuery('#woocommerce_obakulaku_sandbox'.change(function () {
+            var sandbox = jQuery('#woocommerce_obakulaku_sandbox_secKey, #woocommerce_obakulaku_sandbox_appId').closest('tr'),
+            production = jQuery('#woocommerce_obakulaku_secKey, #woocommerce_obakulaku_appId').closest('tr');
 
-
+            if (jQuery(this).is(':checked')) {
+              sandbox.show();
+              production.hide();
+            } else {
+              sandbox.hide();
+              production.show();
+                }
+              )
+          }))
 
       }
+
+
     }
   }
