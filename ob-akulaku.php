@@ -76,7 +76,7 @@ WC tested up to: 3.7
         <table class="form-table">
           <?php $this->generate_settings_html(); ?>
       	        <script type="text/javascript">
-      	    	jQuery('#woocommerce_braintree_sandbox').change(function () {
+      	    	jQuery('#woocommerce_obakulaku_sandbox').change(function () {
                 var sandbox = jQuery('#woocommerce_obakulaku_sandbox_secKey, #woocommerce_obakulaku_sandbox_appId').closest('tr'),
                 production = jQuery('#woocommerce_obakulaku_secKey, #woocommerce_obakulaku_appId').closest('tr');
 
@@ -168,7 +168,7 @@ WC tested up to: 3.7
 		    'default'	 => '',
 		    'desc_tip'	 => true
 		),
-		'secKey'		 => array(
+    'secKey'		 => array(
 		    'title'		 => __( 'Security Key', 'woocommerce' ),
 		    'type'		 => 'text',
 		    'description'	 => __( 'Get your API keys from your Akulaku account.', 'woocommerce' ),
