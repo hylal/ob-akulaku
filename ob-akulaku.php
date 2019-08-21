@@ -75,23 +75,104 @@ WC tested up to: 3.7
         <p><?php _e( 'Payment Gateway untuk Akulaku', 'woocommerce'); ?></p>
         <table class="form-table">
           <?php $this->generate_settings_html(); ?>
-          <script type="text/javascript">
-          jQuery('#woocommerce_obakulaku_sandbox'.change(function () {
-            var sandbox = jQuery('#woocommerce_obakulaku_sandbox_secKey, #woocommerce_obakulaku_sandbox_appId').closest('tr'),
-            production = jQuery('#woocommerce_obakulaku_secKey, #woocommerce_obakulaku_appId').closest('tr');
+      	        <script type="text/javascript">
+      	    	jQuery('#woocommerce_braintree_sandbox').change(function () {
+                var sandbox = jQuery('#woocommerce_obakulaku_sandbox_secKey, #woocommerce_obakulaku_sandbox_appId').closest('tr'),
+                production = jQuery('#woocommerce_obakulaku_secKey, #woocommerce_obakulaku_appId').closest('tr');
 
-            if (jQuery(this).is(':checked')) {
-              sandbox.show();
-              production.hide();
-            } else {
-              sandbox.hide();
-              production.show();
-                }
-              )
-          }))
+      	    	    if (jQuery(this).is(':checked')) {
+      	    		sandbox.show();
+      	    		production.hide();
+      	    	    } else {
+      	    		sandbox.hide();
+      	    		production.show();
+      	    	    }
+      	    	}).change();
+      	        </script>
+      	    </table> <?php
+      	}
+        // Fungsi ssl
+      public function checks() {
+      if ( $this->enabled == 'no' ) {
+        return;
+        }
+          // PHP version
+          if ( version_compare( phpversion(), '5.4.0', '<' ) ) {
+            echo '<div class="error"<p>' .sprintf( __( 'OB Akulaku Error: requires PHP 5.4.0 and above. You are using version %s.', 'woocommerce' ), phpversion() ) . '</p></div>';
+          }
+          // Show message if enabled and FORCE SSL is disabled and WordpressHTTPS plugin is not detected
+         elseif ( 'no' == get_option( 'woocommerce_force_ssl_checkout' ) && ! class_exists( 'WordPressHTTPS' ) ) {
+       $greater_than_33 = version_compare( '3.3', WC_VERSION );
+       $wc_settings_url = admin_url( sprintf( 'admin.php?page=wc-settings&tab=%s', $greater_than_33 ? 'advanced' : 'checkout' ) );
 
-      }
+       echo '<div class="error"><p>' . sprintf( __( 'OB Akulaku is enabled, but the <a href="%s">Secure checkout</a> option is disabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - OB Akulaku will only work in sandbox mode.', 'woocommerce' ), $wc_settings_url ) . '</p></div>';
+         }
+     }
+      // Check PG ini enabled
+      public function is_available() {
+       if ( 'yes' != $this->enabled ) {
+         return false;
+       }
 
-
+       return true;
     }
-  }
+    // PG Setting
+    public function init_form_fieds() {
+      $this->form_fields = array(
+		'enabled'		 => array(
+		    'title'		 => __( 'Enable/Disable', 'woocommerce' ),
+		    'label'		 => __( 'Enable OB Akulaku Payment Gateway', 'woocommerce' ),
+		    'type'		 => 'checkbox',
+		    'description'	 => '',
+		    'default'	 => 'no'
+		),
+    'title'			 => array(
+		    'title'		 => __( 'Title', 'woocommerce' ),
+		    'type'		 => 'text',
+		    'description'	 => __( 'Layanan Akulaku disini.', 'woocommerce' ),
+		    'default'	 => __( 'OB Akulaku', 'woocommerce' ),
+		    'desc_tip'	 => true
+		),
+    'description'		 => array(
+        'title'		 => __( 'Description', 'woocommerce' ),
+        'type'		 => 'textarea',
+        'description'	 => __( 'This controls the description which the user sees during checkout.', 'woocommerce' ),
+        'default'	 => 'Pay securely with Akulaku.',
+        'desc_tip'	 => true
+    ),
+    'sandbox'		 => array(
+        'title'		 => __( 'Sandbox', 'woocommerce' ),
+        'label'		 => __( 'Enable Sandbox Mode', 'woocommerce' ),
+        'type'		 => 'checkbox',
+        'description'	 => __( 'Place the payment gateway in sandbox mode using sandbox API keys (real payments will not be taken).', 'woocommerce' ),
+        'default'	 => 'yes'
+    ),
+    'sandbox_appId'	 => array(
+		    'title'		 => __( 'Sandbox App ID From Akulaku', 'woocommerce' ),
+		    'type'		 => 'text',
+		    'description'	 => __( 'Get your API keys from your Akulaku account.', 'woocommerce' ),
+		    'default'	 => '',
+		    'desc_tip'	 => true
+		),
+    'sandbox_secKey'	 => array(
+        'title'		 => __( 'Sandbox Security Key', 'woocommerce' ),
+        'type'		 => 'text',
+        'description'	 => __( 'Get your Security keys from your Akulaku account.', 'woocommerce' ),
+        'default'	 => '',
+        'desc_tip'	 => true
+    ),
+    'appId'		 => array(
+		    'title'		 => __( 'App ID', 'woocommerce' ),
+		    'type'		 => 'text',
+		    'description'	 => __( 'Get your API keys from your Akulakuj account.', 'woocommerce' ),
+		    'default'	 => '',
+		    'desc_tip'	 => true
+		),
+		'secKey'		 => array(
+		    'title'		 => __( 'Security Key', 'woocommerce' ),
+		    'type'		 => 'text',
+		    'description'	 => __( 'Get your API keys from your Akulaku account.', 'woocommerce' ),
+		    'default'	 => '',
+		    'desc_tip'	 => true
+		),
+    }
