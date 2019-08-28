@@ -11,7 +11,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 WC requires at least: 3.0
 WC tested up to: 3.7
  */
-
+//Bismillahirrahmaanirrahim
     if (!define('ASBPATH')) {
       die;
     }
@@ -44,7 +44,7 @@ WC tested up to: 3.7
       // Constructor
       public function __construct() {
         $this->id = 'obakulaku';
-        $this->icon apply_filters( ' woocommerce_obakulaku_icon', plugins_url( 'public/image/logo-al.png', __FILE__ ) );
+        $this->icon = apply_filters( 'woocommerce_obakulaku_icon', plugins_url( 'public/image/logo-al.png', __FILE__ ) );
         $this->has_fields = true;
         $this->method_title = 'OB Akulaku';
         $this->method_description = 'Integrasi Payment gateway ke akulaku.';
@@ -52,7 +52,7 @@ WC tested up to: 3.7
         // load ke isian kolom
         $this->init_form_fields();
         // load settings
-        $this->init_settings():
+        $this->init_settings();
 
         // Mendapatkan data nilai settings
         $this->title		 = $this->get_option( 'title' );
@@ -175,4 +175,29 @@ WC tested up to: 3.7
 		    'default'	 => '',
 		    'desc_tip'	 => true
 		),
+  );
+  }
+
+  // untuk webhook CallbackOBakulaku
+
+  public function check_OB_akulaku_payment_webhook()
+  {
+    //receive CallbackOBakulaku
+    $decode_webhook = json_decode(@file_get_contents("php://inputs"));
+    global $woocommerce;
+    $order_ref
+  }
+
+  function sign($content){
+    $appId = $this->appId;
+    $secKey = $this->secKey;
+    $content = $appId.$secKey.$content;
+    $sign =  base64_encode(hash('sha512', $content, true));
+    return str_replace(array('+','/','='),array('-','_',''),$sign);
+}
+
+    // Get installment info
+    function wp_remote_get( $url, $args = array() ) {
+      $http = _wp_http_get_object();
+      return $http->get( $url, $args );
     }
