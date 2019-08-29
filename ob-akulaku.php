@@ -42,6 +42,22 @@ function ob_akulaku_payment_gateway_init()
             $this->title              = $this->settings['name'];
             $this->method_description = 'Integrasi Payment gateway ke akulaku.';
 
+            if ( empty($this->settings['server_dest']) || $this->settings['server_dest'] == '0' || $this->settings['server_dest'] == 0 )
+            {
+                $this->appId
+                $this->secId 
+                $this->url 
+            }
+            {
+                $this->appId
+                $this->secId 
+                $this->url 
+            }
+            $pattern = "/(^a-zA-Z0-9]+)/";
+
+
+
+
         }
     }
 
