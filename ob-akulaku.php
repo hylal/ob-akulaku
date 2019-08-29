@@ -34,7 +34,14 @@ function ob_akulaku_payment_gateway_init()
             $this->icon = apply_filters( 'woocommerce_obakulaku_icon', plugins_url( 'public/image/logo-al.png', __FILE__ ) );
             $this->has_fields = true;
             $this->method_title = 'OB Akulaku';
+            
+
+            $this->init_form_fields();
+            $this->init_settings();
+
+            $this->title              = $this->settings['name'];
             $this->method_description = 'Integrasi Payment gateway ke akulaku.';
+
         }
     }
 
