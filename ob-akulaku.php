@@ -19,8 +19,8 @@ if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get
 }
 
 // memulai plugins
-add_action( 'plugins_loaded', 'ob_akulaku_payment_gateway_init', 0);
-function ob_akulaku_payment_gateway_init()
+add_action( 'plugins_loaded', 'obakulaku_payment_gateway_init', 0);
+function obakulaku_payment_gateway_init()
 {
     if ( !class_exists( 'WC_Payment_Gateway' ) ) 
     return;
@@ -28,14 +28,13 @@ function ob_akulaku_payment_gateway_init()
     load_plugin_textdomain('wc-gateway-name', false, dirname( plugin_basename( __FILE__ ) ) . '/languages');
     /**Payment Gateway Class 
     */
-    class WC_Ob_akulaku_Gateway extends WC_Payment_Gateway {
+    class WC_obakulaku_Gateway extends WC_Payment_Gateway {
         public function __construct() {
             $this->id = 'obakulaku';
             $this->icon = apply_filters( 'woocommerce_obakulaku_icon', plugins_url( 'public/image/logo-al.png', __FILE__ ) );
             $this->has_fields = true;
             $this->method_title = 'OB Akulaku';
             
-
             $this->init_form_fields();
             $this->init_settings();
 
@@ -44,17 +43,50 @@ function ob_akulaku_payment_gateway_init()
 
             if ( empty($this->settings['server_dest']) || $this->settings['server_dest'] == '0' || $this->settings['server_dest'] == 0 )
             {
-                $this->appId
-                $this->secId 
-                $this->url 
+                $this->appId  = trim($this->settings['appId_sandbox']);
+                $this->secKey = trim($this->settings['secKey_sandbox']);
+                $this->url    = "https://testmall.akulaku.com";
             }
+            else
             {
-                $this->appId
-                $this->secId 
-                $this->url 
+                $this->appId  = trim($this->settings['appId']);
+                $this->secKey = trim($this->settings['secKey']);
+                $this->url    = "https://mall.akulaku.com";
             }
-            $pattern = "/(^a-zA-Z0-9]+)/";
+           // $pattern = "/(^a-zA-Z0-9]+)/";
+           // $result  = preg_match($pattern, $this->prefixid, $matches, PREG_OFFSET_CAPTURE);
+           add_action('init', array($this, 'check_obakulaku_response' ));
+           add_action('valid_obakulaku_request');
+           add_action('woocommerce_receipt_obakulaku', array($this, 'receipt_page'));
 
+           if ( version_compare( WOOCOMMerCE_VERSION, '2.0.0', '>=' ) )
+           {
+             add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( &$this. 'process_admin_options' ) );
+           }
+           else{
+             add_action( 'woocommerce_update_options_payment_gateway', array( &$this, 'obakulaku_callback' ) );
+           }
+
+ 			/**
+			 * Initialisation form for Gateway Settings
+			 */ 
+        function init_form_fields()
+        {
+          $this->form_fields = array(
+            'enabled'       => array(
+              'title'       => __( 'Enable/Disable', 'woocommerce' ),
+									'type'    => 'checkbox',
+									'label'   => __( 'Enable OBAKULAKU Payment Gateway', 'woocommerce' ),
+									'default' => 'yes'
+            ),
+            'server_dest'   => array(
+              'title'       =>
+              'type'        =>
+              'description' =>
+              'options'     =>
+            )
+          )
+        }          
 
 
 
