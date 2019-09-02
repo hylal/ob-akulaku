@@ -133,6 +133,27 @@ function obakulaku_payment_gateway_init()
 						$this->generate_settings_html();
             echo '</table>';
         }
+        // Generate form
+        public function generate_obakulaku_form($order_id)
+        {
+          global $woocommerce;
+          global $wpdb;
+          static $basket;
+
+          $order = new WC_Order($order_id);
+          $counter = 0;
+
+          foreach($order->get_items() as $item)
+          {
+              $BASKET = $basket.$item['name'].','.$order->get_item_subtotal($item).','.$order->get_line_subtotal($item).';';
+
+          }
+          $BASKET = "";
+
+          
+
+
+        }
                     
 
 
