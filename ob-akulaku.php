@@ -59,13 +59,14 @@ function obakulaku_payment_gateway_init()
            add_action('valid_obakulaku_request');
            add_action('woocommerce_receipt_obakulaku', array($this, 'receipt_page'));
 
-           if ( version_compare( WOOCOMMerCE_VERSION, '2.0.0', '>=' ) )
+           if ( version_compare( WOOCOMMERCE_VERSION, '2.0.0', '>=' ) )
            {
-             add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( &$this. 'process_admin_options' ) );
+             add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( &$this, 'process_admin_options' ) );
            }
            else{
              add_action( 'woocommerce_update_options_payment_gateway', array( &$this, 'obakulaku_callback' ) );
            }
+           add_action( 'woocommerce_api_wc_obakulaku_payment_gateway', array( &$this, 'obakulaku-callback' ) );
 
  			/**
 			 * Initialisation form for Gateway Settings
@@ -80,13 +81,50 @@ function obakulaku_payment_gateway_init()
 									'default' => 'yes'
             ),
             'server_dest'   => array(
-              'title'       =>
-              'type'        =>
-              'description' =>
-              'options'     =>
-            )
-          )
-        }          
+              'title'       => __( 'Server Destination', 'woocommerce' ),
+              'type'        => 'checkbox',
+              'description' => __( 'Pilihan untuk status server Development atau Production', 'woocommerce'),
+              'options'     => array (
+                                       '0' => __( 'Development', 'woocommerce' ),
+                                       '1' => __( 'Production', 'woocommerce' )
+              ),
+              'desc_tip' => true,
+            ),
+            'appId_sandbox' => array(
+              'title'       => __( 'Akulaku Id Sandbox', 'woocommerce' ),
+              'type'        => 'text',
+              'description' => __( 'Masukan nomor id Akulaku untuk development', 'woocommerce' ),
+              'default'     => '',
+              'desc_tip'    => true,
+            ),
+            'secKey_sandbox' => array(
+              'title'       => __( 'Security Key', 'woocommerce' ) ,
+              'type'        => 'text',
+              'description' => __( 'Masukkan security key dari akulaku untuk development', 'woocommerce' ),
+              'default'     => '',
+              'desc_tip'    => true,
+            ),
+            'appId'         => array(
+              'title'       => __( 'Akulaku Id Production', 'woocommerce' ),
+              'type'        => 'text',
+              'description' => __( 'Masukan nomor id Akulaku Production', 'woocommerce' ),
+              'default'     => '',
+              'desc_tip'    => true,
+            ),
+            'secKey'         => array(
+              'title'       => __( 'Security key Production', 'woocommerce' ),
+              'type'        => 'text',
+              'description' => __( 'Masukan security key Akulaku untuk Production', 'woocommerce' ),
+              'default'     => '',
+              'desc_tip'    => true,
+
+            ),
+
+          );
+        } 
+        //untuk admin options
+        public function admin_options()
+                    
 
 
 
