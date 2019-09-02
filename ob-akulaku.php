@@ -124,6 +124,15 @@ function obakulaku_payment_gateway_init()
         } 
         //untuk admin options
         public function admin_options()
+        {
+          echo '<h2>'.__('Akulaku Payment gateway', 'woocommerce').'</h2>';
+          echo '<p>' .__('Kerjasama OB Fit dan Akulaku', 'woocommerce').'</p>';
+          echo "<h3>obakulaku Parameter</h3><br>\r\n";
+
+          echo '<table class="form-table">';
+						$this->generate_settings_html();
+            echo '</table>';
+        }
                     
 
 
