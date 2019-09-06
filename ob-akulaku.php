@@ -133,31 +133,36 @@ function obakulaku_payment_gateway_init()
 						$this->generate_settings_html();
             echo '</table>';
         }
-        // Generate form
-        public function generate_obakulaku_form($order_id)
-        {
-          global $woocommerce;
-          global $wpdb;
-          static $basket;
 
-          $order = new WC_Order($order_id);
-          $counter = 0;
-
-          foreach($order->get_items() as $item)
-          {
-              $BASKET = $basket.$item['name'].','.$order->get_item_subtotal($item).','.$order->get_line_subtotal($item).';';
-
-          }
-          $BASKET = "";
-          //ORDER ITEMS
-          if( sizeof( $order->get_items() ) > 0 )
-          {
-            foreach( $order->get_items() as $item )
-            { $BASKET .= $item['name'] . "," . number_format($order->get_item_subtotal($item), 2, '.', '') . "," . $item['qty'] . "," . number_format($order->get_item_subtotal($item)*$item['qty'], 2, '.', '') . ";";
-          
-            }
-          }
-          // Shipping Fee
+        
+        // Generate form payments
+        public function generate_dokuonecheckout_form($order_id) 
+				{
+					
+						global $woocommerce;
+						global $wpdb;
+						static $basket;
+		
+						$order = new WC_Order($order_id);
+						$counter = 0;
+		
+						foreach($order->get_items() as $item) 
+						{
+								$BASKET = $basket.$item['name'].','.$order->get_item_subtotal($item).','.$item['qty'].','.$order->get_line_subtotal($item).';';
+						}
+						
+						$BASKET = "";
+						
+						// Order Items
+						if( sizeof( $order->get_items() ) > 0 )
+						{
+								foreach( $order->get_items() as $item )
+								{							
+										$BASKET .= $item['name'] . "," . number_format($order->get_item_subtotal($item), 2, '.', '') . "," . $item['qty'] . "," . number_format($order->get_item_subtotal($item)*$item['qty'], 2, '.', '') . ";";
+								}
+						}
+						
+						// Shipping Fee
 						if( $order->order_shipping > 0 )
 						{
 								$BASKET .= "Shipping Fee," . number_format($order->order_shipping, 2, '.', '') . ",1," . number_format($order->order_shipping, 2, '.', '') . ";";
@@ -178,9 +183,32 @@ function obakulaku_payment_gateway_init()
 										$fee_counter++;
 										$BASKET .= "Fee Item," . $item['line_total'] . ",1," . $item['line_total'] . ";";																		
 								}
-            }
-            
-            $BASKET = preg_replace("/([^a-zA-Z0-9.\-,=:;&% ]+)/", " ", $BASKET);
+						}
+				
+						$BASKET = preg_replace("/([^a-zA-Z0-9.\-,=:;&% ]+)/", " ", $BASKET);	
+       
+            $current_user      = wp_get_current_user();
+
+
+
+            $appId             = trim($this->appId);
+            $refNo             = $order_id;
+            $totalPrice        = number_format($order->order_total, 2, '.', '');
+            $userAccount       = trim($current_user->ID);
+            $receiverName      = trim($order->billing_first_name . " " . $order->billing_last_name);
+            $receiverPhone     = trim($order->billing_phone);
+            $province          = trim($order->billing_city);
+            $city              = trim($order->billing_city);
+            $street            = trim($order->billing_address_1 . " " . $order->billing_address_2);
+            $postcode          = trim($order->billing_postcode);
+            $callbackPageUrl   = WC()->api_request_url( 'WC_obakulaku_Gateway');
+            $details
+            $virtualDetails
+            $extraInfo
+            //bikin signnya dulu nanti
+            $sign              = 
+
+
 
             
 
