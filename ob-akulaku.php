@@ -188,7 +188,7 @@ function obakulaku_payment_gateway_init()
 						$BASKET = preg_replace("/([^a-zA-Z0-9.\-,=:;&% ]+)/", " ", $BASKET);	
        
             $current_user      = wp_get_current_user();
-
+//ok
 
 
             $appId             = trim($this->appId);
