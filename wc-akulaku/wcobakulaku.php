@@ -143,7 +143,7 @@ function woocommerce_wcobakulaku_init() {
                 //merchant user
                 $current_user = $order->billing_first_name . " " . $order->billing_last_name;
                                 //record current user who made a transaction for merchant info
-                $userstreet = $order->billing_address_1 . " " . $order->billing_address_2;
+                $userstreet = $order->billing_address_1 . $order->billing_address_2;
 
                 //Details produk disini
                 $order = wc_get_order( $order_id );
@@ -241,12 +241,12 @@ function woocommerce_wcobakulaku_init() {
                 
                     $security = $this->secKey;
 
-                //$content = $this->appId . $this->secKey . $content;
-                //$content = $appId . $security . $contentjoined;
-                $sign = base64_encode(hash('sha512', $contentjoined, true));
+                $content = $this->appId . $this->secKey . $contentjoined;
+                $sign = base64_encode(hash('sha512', $content, true));
                 $sign = str_replace(array('+','/','='),array('-','_',''),$sign);
 
-                
+              // var_dump($content);
+              //  die;
 
                 //$wahid = ;
                 //$lihat = base64_decode(hash('sha512', '$wahid', true));
@@ -303,7 +303,7 @@ function woocommerce_wcobakulaku_init() {
                 )
                 );
                 //var_dump($response);
-           //die;
+          // die;
 
     
                 
