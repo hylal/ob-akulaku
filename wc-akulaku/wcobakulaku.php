@@ -248,15 +248,6 @@ function woocommerce_wcobakulaku_init() {
               // var_dump($content);
               //  die;
 
-                //$wahid = ;
-                //$lihat = base64_decode(hash('sha512', '$wahid', true));
-                
-                //$lihat = str_replace(array('+','/','='),array('-','_',''),$lihat;
-                
-                
-                
-                
-                // untuk paramater
                 
                 $params = array(
                     'appId' => $this->appId,
