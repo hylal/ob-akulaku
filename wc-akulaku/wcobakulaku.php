@@ -127,19 +127,8 @@ function woocommerce_wcobakulaku_init() {
 
                 //endpoint for inquiry
                 $url = $this->endpoint . '/api/json/public/openpay/new.do';
-
-                
-
-        
-                //$paramsJoined = array();
-                //foreach($sign as $param => $value) {
-                 //   $paramsJoined[] = "$param=$value";
-                //}
-                //$infosign = implode('&', $paramJoined);
-                
-    
-
-                
+                      
+                               
                 //merchant user
                 $current_user = $order->billing_first_name . " " . $order->billing_last_name;
                                 //record current user who made a transaction for merchant info
@@ -193,8 +182,8 @@ function woocommerce_wcobakulaku_init() {
                             "vendorId" => $vendorid
                 ]);
 
-                //var_dump(json_encode($produkdetails));
-                //die;
+               
+                
 
 				/*
 				if (is_user_logged_in()) {
@@ -203,11 +192,8 @@ function woocommerce_wcobakulaku_init() {
 					$current_user = "GUEST";
 				}
                 */		
-
-                //refNo+totalPrice+userAccount+receiverName+receiverPhone+province+city+street+postcode+callbackPageUrl+details+virtualDetails+extraInfo
-                //params signature
-                
-                //generate signature
+                                             
+                /**Generate signature */
             
         
                 $contents = array(
@@ -225,11 +211,9 @@ function woocommerce_wcobakulaku_init() {
                     '',
                     '{}',
                     );
-                    // produk items 
-                    //$produk_items,
 
-                    //var_dump(json_encode($produk_items));
-                    //die;
+                  
+                    
 
             
                     //$contentJoined = array();
@@ -237,16 +221,16 @@ function woocommerce_wcobakulaku_init() {
 
                     //$appId = wc_clean(stripslashes($_REQUEST['appId']));
                 
-                    $appId = $this->appId;
+                    //$appId = $this->appId;
                 
-                    $security = $this->secKey;
+                    //$security = $this->secKey;
 
                 $content = $this->appId . $this->secKey . $contentjoined;
                 $sign = base64_encode(hash('sha512', $content, true));
                 $sign = str_replace(array('+','/','='),array('-','_',''),$sign);
 
-              // var_dump($content);
-              //  die;
+               //var_dump($content);
+               //die;
 
                 
                 $params = array(
@@ -273,8 +257,8 @@ function woocommerce_wcobakulaku_init() {
                 }
                 $infopesanan = implode('&', $paramsJoined);
                 
-                var_dump($infopesanan);
-                exit;
+               
+                
         
                 //$params = http_build_query($params);
                 //$paramds = str_replace(array('+','/','='),array('-','_',''),$sign);
@@ -293,18 +277,18 @@ function woocommerce_wcobakulaku_init() {
                         'body' => $infopesanan,                  
                 )
                 );
-                //var_dump($response);
-          // die;
-
-    
+                 
+ 
                 
-
                 // retrive the bodys response if no errors found
                 $response_body = wp_remote_retrieve_body($response);
                 $response_code = wp_remote_retrieve_response_code($response);
 
+                // var_dump($response_body);
+                //die;
+
                 if (is_wp_error($response)) {
-                    throw new Exception(__('maa saat ini sedang ada kendala untuk menghubungi server Akulaku.', 'wcobakulaku'));                
+                    throw new Exception(__('maaf saat ini sedang ada kendala untuk menghubungi server Akulaku.', 'wcobakulaku'));                
                 }
 
                 if (empty($response_body)) {
@@ -313,47 +297,60 @@ function woocommerce_wcobakulaku_init() {
 
                 // ubah respon server menjadi teks terbaca
                 $resp = json_decode($response_body);
+               
+               //var_dump($resp);
+               //die;
 
                 //log respon dari server
                 $this->log('response body: ' . $response_body);
                 $this->log('response code: ' . $response_code);
                 $this->log($url);
 
+                $signPembayaran = $this->appId . $this->secKey . $order_id;
+
+                $signcode = base64_encode(hash('sha512', $signPembayaran, true));
+                $signcode = str_replace(array('+','/','='),array('-','_',''),$signcode);
+
+
+                $pembayaranUrl = $this->endpoint . "/v2/openPay.html?appId=" . $this->appId . "&refNo=" . $order_id . "&sign=" . $signcode . "&lang=id";
+
                 // Uji code untuk mengetahui bisa atau tidak. 1 or 4
                 // artinya transaksi telah berhasil
                 if ($response_code == '200') {
 
                     // simpan kode referensi ini
-                    $this->log('Permohonan berhasil untuk order id ' . $order->get_order_number() . ' dengan no refensi ' .$resp->refNo);
-                    if($this->payment_method == 'BANK')
+                    $this->log('Permohonan berhasil untuk order id ' . $order->get_order_number() . ' dengan no refensi ' . $order->order_id);
+                    if($this->payment_method == 'AL')
                     {
                         wc()->cart->empty_cart();
                     }
 
                     //redirect ke Thank You Page pastiin lagi paymentUrl-nya
                     return array(
-                        'result' => 'success', 'redirect' => $resp->success,
+                        'result' => 'success', 
+                        'redirect' => $pembayaranUrl,
                     );
                 } else {
                     $this->log('Permohonan Anda Gagal dengan order Id' . $order->get_order_number());
                     //Transaksi tidak berhasil tambahkan peringatan ke keranjang
 
                     if ($response_code == "400") {
-                        wc_add_notice($resp->errMsg, 'error');
+                        wc_add_notice($resp->Message, 'error');
                         // tambah catatan ke order utk noRef
-                        $order->add_order_note( 'Error:' . $resp->errMsg);
+                        $order->add_order_note( 'Error:' . $resp->Message);
                     }
                     else{
                         wc_add_notice("error processing payment", 'error');
                         //tambahkan note 
                         $order->add_order_note( 'Error : error processing payment.');
                     }
-                    reutn;
+                    return;
                 }
             }
 
-            //var_dump($response);
-            //die;
+           // var_dump($response);
+           // die;
+
             /**
              * @return null
              */
@@ -380,7 +377,7 @@ function woocommerce_wcobakulaku_init() {
                 $order = new WC_Order($order_id);
 
                 if ($status == '100' && $this->validate_transaction($appId, $refNo, $sign)) {
-                    $order->add_order_note(__('Pembayaran telah dilakukan melalui Akulaku dengan id ' . $order_id, 'woocommerce'));
+                    $order->add_order_note(__('Pembayaran telah dilakukan melalui Akulaku dengan id ' . $refNo, 'woocommerce'));
                     $this->log("Pembayaran dengan order ID " . $refNo . " telah berhasil.");
                 }else {
 					$order->add_order_note('Pembayaran dengan Akulaku tidak berhasil');
@@ -409,7 +406,7 @@ function woocommerce_wcobakulaku_init() {
                 if ($_REQUEST['status'] == '100') {
 					wc_add_notice('pembayaran dengan akulaku telah berhasil.');
                             return wp_redirect($order->get_checkout_order_received_url());
-				}else if ($_REQUEST['resultCode'] == '1') {
+				}else if ($_REQUEST['status'] == '1') {
 					wc_add_notice('pembayaran dengan akulaku sedang diproses.');
                             return wp_redirect($order->get_checkout_order_received_url());
 				} else {
@@ -420,60 +417,7 @@ function woocommerce_wcobakulaku_init() {
 
             }
 
-            /**
-			 * @param $order_id
-			 * @param $reference
-			 */
-            protected function validate_transaction($order_id, $refNo) {
-                $order = new WC_Order($order_id);
-
-                //endpoint untuk transaksi
-                $url = $this->endpoint . '/api/json/public/openpay/status.do';
-
-                // generate signature
-                $sign = base64_encode($this->refNo . $this->status);
-
-                // parameter untuk sign
-
-                $params = array(
-                    'appId' => $this->appId,
-                    'refNo' => $order_id,
-                    'status' => '',
-                    'sign' => $sign,
-                );
-                $headers = array('Content-Type' => 'application/json');
-
-                // show request for inquiry
-                $this->log("validate transaction:");
-                $this->log(var_export($params, true));
-
-                $response = wp_remote_post($url, array(
-                    'method' => 'POST', 'body' => json_encode($params), 'timeout' => 90, 'sslverify' => false, 'headers' => $headers,
-                ));
-                
-                // retrieve the body's response if no errors found
-                $response_body = wp_remote_retrieve_body($response);
-                $response_code = wp_remote_retrieve_response_code($response);
-
-
-                $this->log("response Body: " . $response_body);
-                $this->log("response Code: " . $response_code);
-                
-                if ($response_code == '200') {
-					// Parse the response into something we can read
-					$resp = json_decode($response_body);
-
-					if ($resp->statusCode == '00') {
-						return true;
-					}
-
-				} else {
-					$this->log($response_body);
-				}
-
-				return false;
-
-            }
+           
 
             /**
 			 * function to generate log for debugging
